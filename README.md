@@ -1,10 +1,8 @@
 # notebooklm-mcp
 
 [![CI](https://github.com/sliberta2023/notebooklm-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/sliberta2023/notebooklm-mcp/actions/workflows/ci.yml)
-[![PyPI](https://img.shields.io/pypi/v/notebooklm-mcp)](https://pypi.org/project/notebooklm-mcp/)
-[![Python](https://img.shields.io/pypi/pyversions/notebooklm-mcp)](https://pypi.org/project/notebooklm-mcp/)
+[![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![smithery badge](https://smithery.ai/badge/notebooklm-mcp)](https://smithery.ai/server/notebooklm-mcp)
 
 A [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server that exposes **Google NotebookLM** to any MCP-compatible AI client — Claude Desktop, Cursor, VS Code, Gemini Antigravity, and more.
 
@@ -26,39 +24,18 @@ A [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server that ex
 ## Requirements
 
 - Python 3.10+
+- Git
 - A Google account with access to [NotebookLM](https://notebooklm.google.com)
 
 ---
 
 ## Installation
 
-### Option A — `uvx` (recommended, no install needed)
-
-```bash
-uvx notebooklm-mcp
-```
-
-### Option B — `pipx`
-
-```bash
-pipx install notebooklm-mcp
-notebooklm-mcp
-```
-
-### Option C — `pip`
-
-```bash
-pip install notebooklm-mcp
-notebooklm-mcp
-```
-
-### Option D — From source
-
 ```bash
 git clone https://github.com/sliberta2023/notebooklm-mcp.git
 cd notebooklm-mcp
 pip install -e .
-notebooklm-mcp
+playwright install chromium
 ```
 
 ---
@@ -77,15 +54,11 @@ Your session is saved to `~/.notebooklm/storage_state.json`. Sessions typically 
 
 > **Security** — `storage_state.json` contains session cookies. Keep it private and never commit it to version control.
 
-You can also point to a custom path via the environment variable:
-
-```bash
-export NOTEBOOKLM_STORAGE_PATH=/path/to/your/storage_state.json
-```
-
 ---
 
 ## Client configuration
+
+Replace `/path/to/notebooklm-mcp` in all snippets below with the absolute path to the cloned repo.
 
 ### Claude Desktop
 
@@ -95,8 +68,8 @@ Edit `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) o
 {
   "mcpServers": {
     "notebooklm": {
-      "command": "uvx",
-      "args": ["notebooklm-mcp"]
+      "command": "python",
+      "args": ["/path/to/notebooklm-mcp/notebooklm_mcp/server.py"]
     }
   }
 }
@@ -114,8 +87,8 @@ Create or edit `.gemini/antigravity/mcp_config.json`:
 {
   "mcpServers": {
     "notebooklm": {
-      "command": "uvx",
-      "args": ["notebooklm-mcp"]
+      "command": "python",
+      "args": ["/path/to/notebooklm-mcp/notebooklm_mcp/server.py"]
     }
   }
 }
@@ -133,8 +106,8 @@ Add to `~/.cursor/mcp.json` (global) or `.cursor/mcp.json` (project):
 {
   "mcpServers": {
     "notebooklm": {
-      "command": "uvx",
-      "args": ["notebooklm-mcp"]
+      "command": "python",
+      "args": ["/path/to/notebooklm-mcp/notebooklm_mcp/server.py"]
     }
   }
 }
@@ -151,8 +124,8 @@ Add to `.vscode/mcp.json` in your workspace:
   "servers": {
     "notebooklm": {
       "type": "stdio",
-      "command": "uvx",
-      "args": ["notebooklm-mcp"]
+      "command": "python",
+      "args": ["/path/to/notebooklm-mcp/notebooklm_mcp/server.py"]
     }
   }
 }
@@ -168,12 +141,19 @@ Add to `~/.codeium/windsurf/mcp_config.json`:
 {
   "mcpServers": {
     "notebooklm": {
-      "command": "uvx",
-      "args": ["notebooklm-mcp"]
+      "command": "python",
+      "args": ["/path/to/notebooklm-mcp/notebooklm_mcp/server.py"]
     }
   }
 }
 ```
+
+---
+
+> **Tip — virtual environment:** If you installed dependencies into a venv, point `command` at the venv Python instead:
+> ```json
+> { "command": "/path/to/notebooklm-mcp/.venv/bin/python" }
+> ```
 
 ---
 
@@ -261,36 +241,21 @@ Ask a grounded question. The answer is generated using only the notebook's sourc
 notebooklm-mcp/
 ├── .github/
 │   └── workflows/
-│       ├── ci.yml        # Run tests + lint on every push / PR
-│       └── publish.yml   # Publish to PyPI on version tag
+│       └── ci.yml            # Run tests + lint on every push / PR
 ├── notebooklm_mcp/
-│   ├── __init__.py       # Package version
-│   ├── client.py         # NotebookLM API layer (wraps notebooklm-py)
-│   └── server.py         # MCP tool definitions + entry point
+│   ├── __init__.py           # Package version
+│   ├── client.py             # NotebookLM API layer (wraps notebooklm-py)
+│   └── server.py             # MCP tool definitions + entry point
 ├── tests/
-│   └── test_tools.py     # Unit tests (no auth required)
+│   └── test_tools.py         # Unit tests (no auth required)
 ├── .gitignore
 ├── CHANGELOG.md
 ├── LICENSE
 ├── pyproject.toml
-├── README.md
-└── smithery.yaml         # Smithery MCP registry config
+└── README.md
 ```
 
 The API layer (`client.py`) is decoupled from the MCP tool layer (`server.py`). If Google releases an official API, only `client.py` needs updating.
-
----
-
-## Publishing a new release
-
-1. Bump `version` in `pyproject.toml` and `notebooklm_mcp/__init__.py`
-2. Add an entry to `CHANGELOG.md`
-3. Commit and tag:
-   ```bash
-   git tag v0.2.0
-   git push origin main --tags
-   ```
-4. The `publish.yml` workflow automatically builds and uploads to PyPI.
 
 ---
 
@@ -299,7 +264,6 @@ The API layer (`client.py`) is decoupled from the MCP tool layer (`server.py`). 
 Contributions are welcome. Please open an issue first for significant changes.
 
 ```bash
-# Set up development environment
 git clone https://github.com/sliberta2023/notebooklm-mcp.git
 cd notebooklm-mcp
 pip install -e ".[dev]"
@@ -320,8 +284,9 @@ ruff format .
 |---------|-----|
 | `FileNotFoundError: storage_state.json` | Run `python -m notebooklm login` |
 | `AuthError` / HTTP 401 | Session expired — re-run `python -m notebooklm login` |
-| Server not listed in client | Check the `command` path; try `which uvx` or `which notebooklm-mcp` |
+| `ModuleNotFoundError: notebooklm_mcp` | Ensure you ran `pip install -e .` from the repo root |
 | `playwright._impl._errors.Error` | Run `playwright install chromium` |
+| Server not listed in client | Verify the `args` path is the absolute path to `server.py` |
 | Tool calls time out | The Google internal endpoint may have changed; check for `notebooklm-py` updates |
 
 ---
