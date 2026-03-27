@@ -1,0 +1,29 @@
+# Smithery MCP Registry configuration
+# https://smithery.ai/docs/config
+name: notebooklm-mcp
+displayName: NotebookLM MCP
+description: >
+  Connect any MCP client to Google NotebookLM. List notebooks, query grounded
+  answers, add sources (URLs, PDFs, plain text), and retrieve notebook metadata
+  — all via the Model Context Protocol.
+homepage: https://github.com/sliberta2023/notebooklm-mcp
+license: MIT
+startCommand:
+  type: stdio
+  configSchema:
+    type: object
+    properties:
+      storage_path:
+        type: string
+        description: >
+          Path to the Playwright storage_state.json file containing your Google
+          session cookies. Defaults to ~/.notebooklm/storage_state.json.
+          Obtain by running: python -m notebooklm login
+  commandFunction: |-
+    (config) => ({
+      command: "uvx",
+      args: ["notebooklm-mcp"],
+      env: config.storage_path
+        ? { NOTEBOOKLM_STORAGE_PATH: config.storage_path }
+        : {}
+    })
