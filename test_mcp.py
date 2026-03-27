@@ -10,8 +10,6 @@ Requires ~/.notebooklm/storage_state.json (run `python -m notebooklm login` firs
 
 import asyncio
 import json
-import subprocess
-import sys
 from pathlib import Path
 
 SERVER = Path(__file__).parent / "notebooklm_mcp" / "server.py"
