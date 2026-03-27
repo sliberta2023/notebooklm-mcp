@@ -31,6 +31,8 @@ A [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server that ex
 
 ## Installation
 
+> **Vibecoder?** Paste [`prompt.md`](prompt.md) into your AI assistant for a guided one-shot setup.
+
 ```bash
 git clone https://github.com/sliberta2023/notebooklm-mcp.git
 cd notebooklm-mcp
