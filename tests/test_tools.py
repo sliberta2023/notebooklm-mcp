@@ -57,9 +57,9 @@ class TestListNotebooks:
     async def test_parses_dict_notebook(self):
         api = NotebookLMApiClient()
         mock = _make_mock_client(api)
-        mock.notebooks.list = AsyncMock(return_value=[
-            {"id": "xyz", "title": "Dict NB", "created_at": None, "sources_count": 0}
-        ])
+        mock.notebooks.list = AsyncMock(
+            return_value=[{"id": "xyz", "title": "Dict NB", "created_at": None, "sources_count": 0}]
+        )
 
         result = await api.list_notebooks()
         assert result[0].id == "xyz"

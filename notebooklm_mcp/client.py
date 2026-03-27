@@ -108,9 +108,7 @@ class NotebookLMApiClient:
     @property
     def _c(self) -> _BaseClient:
         if self._client is None:
-            raise RuntimeError(
-                "Client not initialised – call ensure_authenticated() first."
-            )
+            raise RuntimeError("Client not initialised – call ensure_authenticated() first.")
         return self._client
 
     # ------------------------------------------------------------------

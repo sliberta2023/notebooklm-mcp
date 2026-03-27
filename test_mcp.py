@@ -19,7 +19,8 @@ PYTHON = Path(__file__).parent / ".venv" / "bin" / "python"
 async def run_test():
     print("Starting MCP server process...")
     proc = await asyncio.create_subprocess_exec(
-        str(PYTHON), str(SERVER),
+        str(PYTHON),
+        str(SERVER),
         stdin=asyncio.subprocess.PIPE,
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE,
@@ -47,11 +48,14 @@ async def run_test():
 
     # 1. Initialize
     print("\n=== 1. Initialize ===")
-    resp = await send("initialize", {
-        "protocolVersion": "2024-11-05",
-        "capabilities": {},
-        "clientInfo": {"name": "test-client", "version": "1.0"},
-    })
+    resp = await send(
+        "initialize",
+        {
+            "protocolVersion": "2024-11-05",
+            "capabilities": {},
+            "clientInfo": {"name": "test-client", "version": "1.0"},
+        },
+    )
     print(json.dumps(resp.get("result", resp.get("error")), indent=2))
 
     # Notify initialized
@@ -91,7 +95,9 @@ async def run_test():
 
     # 4. get_notebook_info
     print("\n=== 4. get_notebook_info ===")
-    resp = await send("tools/call", {"name": "get_notebook_info", "arguments": {"notebook_id": nb_id}})
+    resp = await send(
+        "tools/call", {"name": "get_notebook_info", "arguments": {"notebook_id": nb_id}}
+    )
     content = resp.get("result", {}).get("content", [])
     text = content[0]["text"] if content else "{}"
     info = json.loads(text)
@@ -99,13 +105,16 @@ async def run_test():
 
     # 5. add_source (URL)
     print("\n=== 5. add_source (URL) ===")
-    resp = await send("tools/call", {
-        "name": "add_source",
-        "arguments": {
-            "notebook_id": nb_id,
-            "url": "https://en.wikipedia.org/wiki/Model_Context_Protocol",
+    resp = await send(
+        "tools/call",
+        {
+            "name": "add_source",
+            "arguments": {
+                "notebook_id": nb_id,
+                "url": "https://en.wikipedia.org/wiki/Model_Context_Protocol",
+            },
         },
-    })
+    )
     content = resp.get("result", {}).get("content", [])
     if "error" in resp:
         print("ERROR:", resp["error"])
@@ -115,13 +124,16 @@ async def run_test():
 
     # 6. query_notebook
     print("\n=== 6. query_notebook ===")
-    resp = await send("tools/call", {
-        "name": "query_notebook",
-        "arguments": {
-            "notebook_id": nb_id,
-            "question": "Give me a one-sentence summary of the main topic of this notebook.",
+    resp = await send(
+        "tools/call",
+        {
+            "name": "query_notebook",
+            "arguments": {
+                "notebook_id": nb_id,
+                "question": "Give me a one-sentence summary of the main topic of this notebook.",
+            },
         },
-    })
+    )
     content = resp.get("result", {}).get("content", [])
     if "error" in resp:
         print("ERROR:", resp["error"])
